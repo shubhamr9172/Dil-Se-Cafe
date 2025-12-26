@@ -7,7 +7,8 @@ import {
     doc,
     onSnapshot,
     query,
-    orderBy
+    orderBy,
+    where
 } from 'firebase/firestore';
 import type { MenuItem, Category, Order } from '../types';
 
@@ -18,18 +19,29 @@ const ORDERS_COLLECTION = 'orders';
 
 export const dbService = {
     // --- Menu Items ---
-    subscribeToMenuItems: (callback: (items: MenuItem[]) => void) => {
-        const q = query(collection(db, ITEMS_COLLECTION));
+    subscribeToMenuItems: (userId: string, callback: (items: MenuItem[]) => void) => {
+        const q = query(
+            collection(db, ITEMS_COLLECTION),
+            where('userId', '==', userId)
+        );
         return onSnapshot(q, (snapshot) => {
             const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as MenuItem));
             callback(items);
         });
     },
 
-    addMenuItem: async (item: MenuItem) => {
+    addMenuItem: async (userId: string, item: MenuItem) => {
         const { id, ...data } = item;
-        const docRef = await addDoc(collection(db, ITEMS_COLLECTION), data);
+        const docRef = await addDoc(collection(db, ITEMS_COLLECTION), {
+            ...data,
+            userId
+        });
         return docRef.id;
+    },
+
+    updateMenuItem: async (id: string, updates: Partial<MenuItem>) => {
+        const itemRef = doc(db, ITEMS_COLLECTION, id);
+        await updateDoc(itemRef, updates);
     },
 
     deleteMenuItem: async (id: string) => {
@@ -37,32 +49,43 @@ export const dbService = {
     },
 
     // --- Categories ---
-    subscribeToCategories: (callback: (categories: Category[]) => void) => {
-        const q = query(collection(db, CATEGORIES_COLLECTION));
+    subscribeToCategories: (userId: string, callback: (categories: Category[]) => void) => {
+        const q = query(
+            collection(db, CATEGORIES_COLLECTION),
+            where('userId', '==', userId)
+        );
         return onSnapshot(q, (snapshot) => {
             const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category));
             callback(categories);
         });
     },
 
-    addCategory: async (category: Category) => {
+    addCategory: async (userId: string, category: Category) => {
         const { id, ...data } = category;
-        await addDoc(collection(db, CATEGORIES_COLLECTION), data);
+        await addDoc(collection(db, CATEGORIES_COLLECTION), {
+            ...data,
+            userId
+        });
     },
 
     // --- Orders ---
-    subscribeToOrders: (callback: (orders: Order[]) => void) => {
-        const q = query(collection(db, ORDERS_COLLECTION), orderBy('createdAt', 'desc'));
+    subscribeToOrders: (userId: string, callback: (orders: Order[]) => void) => {
+        const q = query(
+            collection(db, ORDERS_COLLECTION),
+            where('userId', '==', userId),
+            orderBy('createdAt', 'desc')
+        );
         return onSnapshot(q, (snapshot) => {
             const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
             callback(orders);
         });
     },
 
-    addOrder: async (order: Order) => {
+    addOrder: async (userId: string, order: Order) => {
         const { id, ...data } = order;
         await addDoc(collection(db, ORDERS_COLLECTION), {
             ...data,
+            userId,
             createdAt: new Date().toISOString()
         });
     },

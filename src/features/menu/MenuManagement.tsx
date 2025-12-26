@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, X } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
@@ -7,36 +7,71 @@ import type { MenuItem } from '../../types';
 import { useStore } from '../../store';
 
 export default function MenuManagement() {
-    const { menuItems, categories, addMenuItem, deleteMenuItem, addCategory } = useStore();
-    const [selectedCategory, setSelectedCategory] = useState<string>('1');
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const { menuItems, categories, addMenuItem, updateMenuItem, deleteMenuItem, addCategory } = useStore();
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
     // Form State
-    const [newItemName, setNewItemName] = useState('');
-    const [newItemPrice, setNewItemPrice] = useState('');
-    const [newItemType, setNewItemType] = useState<'veg' | 'non-veg'>('veg');
+    const [formName, setFormName] = useState('');
+    const [formPrice, setFormPrice] = useState('');
+    const [formType, setFormType] = useState<'veg' | 'non-veg'>('veg');
+
+    // Set default category when categories load
+    useEffect(() => {
+        if (categories.length > 0 && !selectedCategory) {
+            setSelectedCategory(categories[0].id);
+        }
+    }, [categories, selectedCategory]);
 
     // Filter items by category
     const filteredItems = menuItems.filter(item => item.categoryId === selectedCategory);
 
-    const handleAddItem = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newItemName || !newItemPrice) return;
+    const handleOpenAddModal = () => {
+        setEditingItem(null);
+        setFormName('');
+        setFormPrice('');
+        setFormType('veg');
+        setIsModalOpen(true);
+    };
 
-        const newItem: MenuItem = {
-            id: Date.now().toString(),
-            name: newItemName,
-            price: Number(newItemPrice),
-            categoryId: selectedCategory,
-            isAvailable: true,
-            type: newItemType
-        };
-        addMenuItem(newItem);
+    const handleOpenEditModal = (item: MenuItem) => {
+        setEditingItem(item);
+        setFormName(item.name);
+        setFormPrice(item.price.toString());
+        setFormType(item.type === 'egg' ? 'veg' : item.type);
+        setIsModalOpen(true);
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formName || !formPrice) return;
+
+        if (editingItem) {
+            // Update existing item
+            updateMenuItem(editingItem.id, {
+                name: formName,
+                price: Number(formPrice),
+                type: formType
+            });
+        } else {
+            // Add new item
+            const newItem: MenuItem = {
+                id: Date.now().toString(),
+                name: formName,
+                price: Number(formPrice),
+                categoryId: selectedCategory,
+                isAvailable: true,
+                type: formType
+            };
+            addMenuItem(newItem);
+        }
 
         // Reset and close
-        setNewItemName('');
-        setNewItemPrice('');
-        setIsAddModalOpen(false);
+        setFormName('');
+        setFormPrice('');
+        setIsModalOpen(false);
+        setEditingItem(null);
     };
 
     const handleAddCategory = () => {
@@ -54,7 +89,7 @@ export default function MenuManagement() {
         <div className="space-y-6 relative">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold tracking-tight">Menu Management</h2>
-                <Button onClick={() => setIsAddModalOpen(true)}>
+                <Button onClick={handleOpenAddModal}>
                     <Plus className="mr-2 h-4 w-4" /> Add Item
                 </Button>
             </div>
@@ -92,7 +127,7 @@ export default function MenuManagement() {
                                 {item.description || 'No description'}
                             </p>
                             <div className="mt-4 flex justify-end space-x-2">
-                                <Button variant="ghost" size="sm">
+                                <Button variant="ghost" size="sm" onClick={() => handleOpenEditModal(item)}>
                                     <Edit2 className="h-4 w-4" />
                                 </Button>
                                 <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600" onClick={() => deleteMenuItem(item.id)}>
@@ -104,25 +139,25 @@ export default function MenuManagement() {
                 ))}
             </div>
 
-            {/* Add Item Modal Overlay */}
-            {isAddModalOpen && (
+            {/* Add/Edit Item Modal Overlay */}
+            {isModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <Card className="w-full max-w-md mx-4">
                         <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Add New Item</CardTitle>
-                            <Button variant="ghost" size="icon" onClick={() => setIsAddModalOpen(false)}>
+                            <CardTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</CardTitle>
+                            <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
                                 <X className="h-4 w-4" />
                             </Button>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={handleAddItem} className="space-y-4">
+                            <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Item Name</label>
                                     <Input
                                         required
                                         placeholder="e.g., Grilled Sandwich"
-                                        value={newItemName}
-                                        onChange={e => setNewItemName(e.target.value)}
+                                        value={formName}
+                                        onChange={e => setFormName(e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -131,8 +166,8 @@ export default function MenuManagement() {
                                         required
                                         type="number"
                                         placeholder="150"
-                                        value={newItemPrice}
-                                        onChange={e => setNewItemPrice(e.target.value)}
+                                        value={formPrice}
+                                        onChange={e => setFormPrice(e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -142,24 +177,24 @@ export default function MenuManagement() {
                                             <input
                                                 type="radio"
                                                 name="type"
-                                                checked={newItemType === 'veg'}
-                                                onChange={() => setNewItemType('veg')}
+                                                checked={formType === 'veg'}
+                                                onChange={() => setFormType('veg')}
                                             /> Veg
                                         </label>
                                         <label className="flex items-center gap-2">
                                             <input
                                                 type="radio"
                                                 name="type"
-                                                checked={newItemType === 'non-veg'}
-                                                onChange={() => setNewItemType('non-veg')}
+                                                checked={formType === 'non-veg'}
+                                                onChange={() => setFormType('non-veg')}
                                             /> Non-Veg
                                         </label>
                                     </div>
                                 </div>
 
                                 <div className="pt-4 flex justify-end gap-2">
-                                    <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
-                                    <Button type="submit">Save Item</Button>
+                                    <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+                                    <Button type="submit">{editingItem ? 'Update Item' : 'Save Item'}</Button>
                                 </div>
                             </form>
                         </CardContent>

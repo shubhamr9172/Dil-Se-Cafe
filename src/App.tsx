@@ -17,20 +17,23 @@ import ProtectedRoute from './components/ProtectedRoute';
 const Settings = () => <div className="text-2xl font-bold">Settings</div>;
 
 function App() {
-  const { setMenuItems, setCategories, setOrders } = useStore();
+  const { setMenuItems, setCategories, setOrders, user } = useStore();
 
   useEffect(() => {
-    // Subscribe to Real-time updates
-    const unsubItems = dbService.subscribeToMenuItems(setMenuItems);
-    const unsubCats = dbService.subscribeToCategories(setCategories);
-    const unsubOrders = dbService.subscribeToOrders(setOrders);
+    if (!user?.uid) return; // Don't subscribe if no user is logged in
+
+    // Subscribe to Real-time updates with user scoping
+    const unsubItems = dbService.subscribeToMenuItems(user.uid, setMenuItems);
+    const unsubCats = dbService.subscribeToCategories(user.uid, setCategories);
+    const unsubOrders = dbService.subscribeToOrders(user.uid, setOrders);
 
     return () => {
       unsubItems();
       unsubCats();
       unsubOrders();
     };
-  }, [setMenuItems, setCategories, setOrders]);
+  }, [setMenuItems, setCategories, setOrders, user]);
+
 
   return (
     <BrowserRouter>

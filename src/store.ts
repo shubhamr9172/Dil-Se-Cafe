@@ -28,22 +28,27 @@ interface AppState {
     logout: () => void;
 }
 
-export const useStore = create<AppState>((set) => ({
+export const useStore = create<AppState>((set, get) => ({
     menuItems: [],
     categories: [],
     orders: [],
 
     addMenuItem: (item) => {
-        dbService.addMenuItem(item);
+        const user = get().user;
+        if (user?.uid) {
+            dbService.addMenuItem(user.uid, item);
+        }
     },
 
     addCategory: (category) => {
-        dbService.addCategory(category);
+        const user = get().user;
+        if (user?.uid) {
+            dbService.addCategory(user.uid, category);
+        }
     },
 
     updateMenuItem: (id, updatedItem) => {
-        // dbService.updateMenuItem(id, updatedItem);
-        console.log("Update not implemented yet", id, updatedItem);
+        dbService.updateMenuItem(id, updatedItem);
     },
 
     deleteMenuItem: (id) => {
@@ -51,7 +56,10 @@ export const useStore = create<AppState>((set) => ({
     },
 
     addOrder: (order) => {
-        dbService.addOrder(order);
+        const user = get().user;
+        if (user?.uid) {
+            dbService.addOrder(user.uid, order);
+        }
     },
 
     updateOrderStatus: (id, status) => {

@@ -30,7 +30,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <Card className="w-full max-w-md mx-4">
                 <CardHeader>
-                    <CardTitle className="text-center">Cafe POS Login</CardTitle>
+                    <CardTitle className="text-center">Login</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div id="mojoauth-passwordless-form" />
