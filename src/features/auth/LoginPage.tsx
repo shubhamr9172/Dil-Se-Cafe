@@ -16,7 +16,10 @@ export default function LoginPage() {
     useEffect(() => {
         const mojoauth = new MojoAuth('c22b7204-7c33-47aa-b392-987ef4d16940', {
             source: [{ type: 'email', feature: 'magiclink' }],
-            redirect_url: window.location.href, // Redirect back to this page to handle token
+            redirect_url: window.location.href,
+            language: 'en',
+            privacy_policy: `${window.location.origin}/privacy-policy`,
+            terms_and_conditions: `${window.location.origin}/terms-and-conditions`,
         });
 
         mojoauth.signIn().then((payload: any) => {

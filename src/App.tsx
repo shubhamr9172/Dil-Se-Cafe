@@ -10,6 +10,8 @@ import KitchenDisplay from './features/kitchen/KitchenDisplay';
 import OrdersPage from './features/order/OrdersPage';
 import LoginPage from './features/auth/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
 
 // Placeholder Pages
 // const Dashboard = () => <div className="text-2xl font-bold">Dashboard / POS</div>;
@@ -39,6 +41,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
         <Route path="/" element={
           <ProtectedRoute>
