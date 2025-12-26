@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-light: #4B5563;
+  --color-primary: #1F2937;
+  --color-primary-dark: #111827;
+  --color-accent: #F59E0B;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-900;
+  }
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  body {
+    background: white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
