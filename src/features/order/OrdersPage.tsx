@@ -6,8 +6,8 @@ export default function OrdersPage() {
     const { orders } = useStore();
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold tracking-tight">Order History</h2>
+        <div className="space-y-4 md:space-y-6">
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight">Order History</h2>
 
             <div className="grid gap-4">
                 {orders.length === 0 ? (
@@ -18,10 +18,10 @@ export default function OrdersPage() {
                     orders.map((order) => (
                         <Card key={order.id} className="overflow-hidden">
                             <CardHeader className="bg-gray-50 py-3 border-b">
-                                <div className="flex justify-between items-center">
-                                    <div className="flex items-center gap-4">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2 md:gap-4">
                                         <span className="font-bold">#{order.id.split('-')[1]}</span>
-                                        <span className="text-sm text-gray-500">{format(new Date(order.createdAt), 'PP p')}</span>
+                                        <span className="text-xs md:text-sm text-gray-500">{format(new Date(order.createdAt), 'PP p')}</span>
                                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium uppercase
                       ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                 order.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
@@ -29,7 +29,7 @@ export default function OrdersPage() {
                                             {order.status}
                                         </span>
                                     </div>
-                                    <div className="font-bold">₹{order.total.toFixed(2)}</div>
+                                    <div className="font-bold text-lg">₹{order.total.toFixed(2)}</div>
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-4">
@@ -41,7 +41,7 @@ export default function OrdersPage() {
                                         </div>
                                     ))}
                                 </div>
-                                <div className="mt-4 pt-2 border-t flex justify-between text-sm">
+                                <div className="mt-4 pt-2 border-t flex flex-col sm:flex-row justify-between gap-2 text-sm">
                                     <span className="text-gray-500">Payment: {(order.paymentMethod || 'cash').toUpperCase()}</span>
                                     <span className="text-gray-500">Table: {order.tableNo}</span>
                                 </div>

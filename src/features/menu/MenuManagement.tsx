@@ -133,10 +133,10 @@ export default function MenuManagement() {
     };
 
     return (
-        <div className="space-y-6 relative">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold tracking-tight">Menu Management</h2>
-                <Button onClick={handleOpenAddModal}>
+        <div className="space-y-4 md:space-y-6 relative">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <h2 className="text-xl md:text-2xl font-bold tracking-tight">Menu Management</h2>
+                <Button onClick={handleOpenAddModal} className="w-full sm:w-auto">
                     <Plus className="mr-2 h-4 w-4" /> Add Item
                 </Button>
             </div>
@@ -233,7 +233,7 @@ export default function MenuManagement() {
 
             {/* Items Grid */}
             {filteredItems.length > 0 && (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {filteredItems.map((item) => (
                         <Card key={item.id}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -263,15 +263,15 @@ export default function MenuManagement() {
 
             {/* Add/Edit Item Modal Overlay */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <Card className="w-full max-w-md mx-4">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</CardTitle>
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <Card className="w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
+                        <CardHeader className="flex flex-row items-center justify-between sticky top-0 bg-white z-10 border-b">
+                            <CardTitle className="text-lg md:text-xl">{editingItem ? 'Edit Item' : 'Add New Item'}</CardTitle>
                             <Button variant="ghost" size="icon" onClick={() => setIsModalOpen(false)}>
                                 <X className="h-4 w-4" />
                             </Button>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-4 md:p-6">
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Item Name</label>
@@ -280,6 +280,7 @@ export default function MenuManagement() {
                                         placeholder="e.g., Grilled Sandwich"
                                         value={formName}
                                         onChange={e => setFormName(e.target.value)}
+                                        className="h-11"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -290,13 +291,14 @@ export default function MenuManagement() {
                                         placeholder="150"
                                         value={formPrice}
                                         onChange={e => setFormPrice(e.target.value)}
+                                        className="h-11"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Category</label>
                                     <select
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                                        className="w-full h-11 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                                         value={formCategory}
                                         onChange={e => setFormCategory(e.target.value)}
                                     >
@@ -328,9 +330,9 @@ export default function MenuManagement() {
                                     </div>
                                 </div>
 
-                                <div className="pt-4 flex justify-end gap-2">
-                                    <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-                                    <Button type="submit">{editingItem ? 'Update Item' : 'Save Item'}</Button>
+                                <div className="pt-4 flex flex-col sm:flex-row justify-end gap-2">
+                                    <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} className="h-11">Cancel</Button>
+                                    <Button type="submit" className="h-11">{editingItem ? 'Update Item' : 'Save Item'}</Button>
                                 </div>
                             </form>
                         </CardContent>
