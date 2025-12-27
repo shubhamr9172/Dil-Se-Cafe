@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { useStore } from './store';
 import { dbService } from './services/db';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 import POSPage from './features/order/POSPage';
 import MenuManagement from './features/menu/MenuManagement';
@@ -19,7 +21,14 @@ import TermsAndConditions from './pages/TermsAndConditions';
 const Settings = () => <div className="text-2xl font-bold">Settings</div>;
 
 function App() {
-  const { setMenuItems, setCategories, setOrders, user } = useStore();
+  const { setMenuItems, setCategories, setOrders, user, setUser } = useStore();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, [setUser]);
 
   useEffect(() => {
     if (!user?.uid) return; // Don't subscribe if no user is logged in

@@ -1,74 +1,106 @@
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Coffee, FileText, ChefHat, LogOut, Settings } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Coffee, FileText, ChefHat, LogOut, Settings, Home, ShoppingCart } from 'lucide-react';
 import { cn } from './ui/Button';
 import { useStore } from '../store';
+import { auth } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
 
 interface LayoutProps {
     children: React.ReactNode;
 }
 
+interface NavLinkProps {
+    to: string;
+    icon: React.ReactNode;
+    label: string;
+    active: boolean;
+}
+
+function NavLink({ to, icon, label, active }: NavLinkProps) {
+    return (
+        <Link
+            to={to}
+            className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200",
+                active
+                    ? "bg-primary-600 text-neutral-50 shadow-md"
+                    : "text-secondary-200 hover:bg-secondary-700 hover:text-neutral-50"
+            )}
+        >
+            {icon}
+            <span>{label}</span>
+        </Link>
+    );
+}
+
 export function Layout({ children }: LayoutProps) {
+    const navigate = useNavigate();
     const location = useLocation();
     const { logout } = useStore();
 
-    const navigation = [
-        { name: 'POS', href: '/', icon: Coffee },
-        { name: 'Orders', href: '/orders', icon: FileText },
-        { name: 'Kitchen', href: '/kitchen', icon: ChefHat },
-        { name: 'Menu', href: '/menu', icon: LayoutDashboard },
-        { name: 'Settings', href: '/settings', icon: Settings },
-    ];
+    const handleLogout = async () => {
+        await signOut(auth);
+        logout();
+        navigate('/login');
+    };
+
+    const isActive = (path: string) => location.pathname === path;
 
     return (
-        <div className="flex h-screen bg-gray-50">
-            {/* Sidebar */}
-            <div className="hidden md:flex md:w-64 md:flex-col">
-                <div className="flex flex-col flex-grow border-r border-gray-200 bg-white pt-5 pb-4 overflow-y-auto">
-                    <div className="flex items-center flex-shrink-0 px-4">
-                        <h1 className="text-xl font-bold text-gray-900">Dil Se Cafe</h1>
-                    </div>
-                    <div className="mt-5 flex-grow flex flex-col">
-                        <nav className="flex-1 px-2 space-y-1">
-                            {navigation.map((item) => {
-                                const isActive = location.pathname === item.href;
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        to={item.href}
-                                        className={cn(
-                                            isActive
-                                                ? 'bg-gray-100 text-gray-900'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                                        )}
-                                    >
-                                        <item.icon
-                                            className={cn(
-                                                isActive ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500',
-                                                'mr-3 flex-shrink-0 h-6 w-6'
-                                            )}
-                                            aria-hidden="true"
-                                        />
-                                        {item.name}
-                                    </Link>
-                                );
-                            })}
-                        </nav>
-                    </div>
-                    <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-                        <button onClick={() => logout()} className="flex-shrink-0 w-full group block text-left">
-                            <div className="flex items-center">
-                                <div>
-                                    <LogOut className="inline-block h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">Logout</p>
-                                </div>
-                            </div>
-                        </button>
-                    </div>
+        <div className="flex h-screen bg-neutral-50">
+            {/* Sidebar with warm cafe colors */}
+            <aside className="w-64 bg-gradient-to-b from-secondary-800 to-secondary-900 text-neutral-50 flex flex-col shadow-xl">
+                {/* Logo/Brand */}
+                <div className="p-6 border-b border-secondary-700">
+                    <h1 className="text-2xl font-bold text-accent-400">Dil Se Cafe</h1>
+                    <p className="text-xs text-secondary-300 mt-1">POS System</p>
                 </div>
-            </div>
+
+                {/* Navigation */}
+                <nav className="flex-1 p-4 space-y-2">
+                    <NavLink
+                        to="/"
+                        icon={<Home className="h-5 w-5" />}
+                        label="POS"
+                        active={isActive('/')}
+                    />
+                    <NavLink
+                        to="/orders"
+                        icon={<ShoppingCart className="h-5 w-5" />}
+                        label="Orders"
+                        active={isActive('/orders')}
+                    />
+                    <NavLink
+                        to="/kitchen"
+                        icon={<ChefHat className="h-5 w-5" />}
+                        label="Kitchen"
+                        active={isActive('/kitchen')}
+                    />
+                    <NavLink
+                        to="/menu"
+                        icon={<Coffee className="h-5 w-5" />}
+                        label="Menu"
+                        active={isActive('/menu')}
+                    />
+                    <NavLink
+                        to="/settings"
+                        icon={<Settings className="h-5 w-5" />}
+                        label="Settings"
+                        active={isActive('/settings')}
+                    />
+                </nav>
+
+                {/* Logout Button */}
+                <div className="p-4 border-t border-secondary-700">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary-700 hover:bg-primary-600 text-neutral-50 transition-colors duration-200"
+                    >
+                        <LogOut className="h-5 w-5" />
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </aside>
 
             {/* Main content */}
             <div className="flex flex-col flex-1 overflow-hidden">

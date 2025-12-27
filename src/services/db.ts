@@ -68,6 +68,15 @@ export const dbService = {
         });
     },
 
+    updateCategory: async (id: string, updates: Partial<Category>) => {
+        const catRef = doc(db, CATEGORIES_COLLECTION, id);
+        await updateDoc(catRef, updates);
+    },
+
+    deleteCategory: async (id: string) => {
+        await deleteDoc(doc(db, CATEGORIES_COLLECTION, id));
+    },
+
     // --- Orders ---
     subscribeToOrders: (userId: string, callback: (orders: Order[]) => void) => {
         const q = query(

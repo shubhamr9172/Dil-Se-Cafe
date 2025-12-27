@@ -13,6 +13,8 @@ interface AppState {
     deleteMenuItem: (id: string) => void;
 
     addCategory: (category: Category) => void;
+    updateCategory: (id: string, updates: Partial<Category>) => void;
+    deleteCategory: (id: string) => void;
 
     addOrder: (order: Order) => void;
     updateOrderStatus: (id: string, status: Order['status']) => void;
@@ -24,7 +26,9 @@ interface AppState {
 
     // specific for Auth
     user: any | null;
+    initialized: boolean;
     setUser: (user: any | null) => void;
+    setInitialized: (value: boolean) => void;
     logout: () => void;
 }
 
@@ -45,6 +49,14 @@ export const useStore = create<AppState>((set, get) => ({
         if (user?.uid) {
             dbService.addCategory(user.uid, category);
         }
+    },
+
+    updateCategory: (id, updates) => {
+        dbService.updateCategory(id, updates);
+    },
+
+    deleteCategory: (id) => {
+        dbService.deleteCategory(id);
     },
 
     updateMenuItem: (id, updatedItem) => {
@@ -72,6 +84,8 @@ export const useStore = create<AppState>((set, get) => ({
     setOrders: (orders) => set({ orders }),
 
     user: null,
-    setUser: (user) => set({ user }),
+    initialized: false,
+    setUser: (user) => set({ user, initialized: true }),
+    setInitialized: (value) => set({ initialized: value }),
     logout: () => set({ user: null }),
 }));

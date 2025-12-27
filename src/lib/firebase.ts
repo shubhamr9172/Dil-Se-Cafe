@@ -1,18 +1,30 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
 
-// TODO: Replace with your Firebase project configuration
-// You can get this from the Firebase Console -> Project Settings -> General
+// Config from .env
 const firebaseConfig = {
-    apiKey: "AIzaSyDqd-dtrU8YE_WtpFfXdTDZcIezaHsr9_g",
-    authDomain: "cafe-pos-e09ab.firebaseapp.com",
-    projectId: "cafe-pos-e09ab",
-    storageBucket: "cafe-pos-e09ab.firebasestorage.app",
-    messagingSenderId: "482925557210",
-    appId: "1:482925557210:web:7535ca369cb0e8ddfb3ce3"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+// Safe initialization for analytics
+let analyticsInstance = null;
+try {
+    if (typeof window !== 'undefined') {
+        analyticsInstance = getAnalytics(app);
+    }
+} catch (e) {
+    console.warn("Firebase Analytics failed to initialize (this is non-fatal):", e);
+}
+export const analytics = analyticsInstance;

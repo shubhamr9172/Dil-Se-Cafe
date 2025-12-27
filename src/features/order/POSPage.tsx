@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent } from '../../components/ui/Card';
 import type { MenuItem, OrderItem, Order } from '../../types';
@@ -11,6 +12,12 @@ export default function POSPage() {
     const [selectedCategory, setSelectedCategory] = useState<string>('1');
     const [cart, setCart] = useState<OrderItem[]>([]);
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
+    useEffect(() => {
+        if (categories.length > 0 && !categories.find(c => c.id === selectedCategory)) {
+            setSelectedCategory(categories[0].id);
+        }
+    }, [categories, selectedCategory]);
 
     // Derived state
     const filteredItems = menuItems.filter(item => item.categoryId === selectedCategory);
@@ -76,23 +83,39 @@ export default function POSPage() {
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pb-4">
-                    {filteredItems.map(item => (
-                        <Card
-                            key={item.id}
-                            className="cursor-pointer hover:border-primary transition-colors flex flex-col justify-between"
-                            onClick={() => addToCart(item)}
-                        >
-                            <CardContent className="p-4">
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-semibold text-sm line-clamp-2">{item.name}</h3>
-                                    <div className={`h-2.5 w-2.5 rounded-full flex-shrink-0 mt-1 ${item.type === 'veg' ? 'bg-green-500' : 'bg-red-500'}`} />
-                                </div>
-                                <div className="text-primary font-bold">₹{item.price}</div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                {categories.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                        <p className="text-lg font-medium mb-2">No menu items found</p>
+                        <p className="text-sm mb-4">Get started by adding categories and items.</p>
+                        <Link to="/menu">
+                            <Button>Go to Menu Management</Button>
+                        </Link>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto pb-4">
+                        {filteredItems.length === 0 ? (
+                            <div className="col-span-full flex flex-col items-center justify-center h-40 text-gray-500">
+                                <p>No items in this category</p>
+                            </div>
+                        ) : (
+                            filteredItems.map(item => (
+                                <Card
+                                    key={item.id}
+                                    className="cursor-pointer hover:border-primary transition-colors flex flex-col justify-between"
+                                    onClick={() => addToCart(item)}
+                                >
+                                    <CardContent className="p-4">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-semibold text-sm line-clamp-2">{item.name}</h3>
+                                            <div className={`h-2.5 w-2.5 rounded-full flex-shrink-0 mt-1 ${item.type === 'veg' ? 'bg-green-500' : 'bg-red-500'}`} />
+                                        </div>
+                                        <div className="text-primary font-bold">₹{item.price}</div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Cart Area */}

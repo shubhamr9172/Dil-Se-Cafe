@@ -16,7 +16,7 @@ export default function CheckoutModal({ totalAmount, onClose, onConfirm }: Check
     const generateQR = async () => {
         try {
             // UPI ID format: upi://pay?pa=UPI_ID&pn=NAME&am=AMOUNT&cu=INR
-            const upiUrl = `upi://pay?pa=example@upi&pn=CafePOS&am=${totalAmount}&cu=INR`;
+            const upiUrl = `upi://pay?pa=shubhamreddy9172-2@okaxis&pn=Shubham Reddy&am=${totalAmount.toFixed(2)}&cu=INR`;
             const url = await QRCode.toDataURL(upiUrl);
             setQrCodeUrl(url);
         } catch (err) {
