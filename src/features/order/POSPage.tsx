@@ -47,6 +47,7 @@ export default function POSPage() {
     };
 
     const handleCheckout = (method: 'cash' | 'upi') => {
+        const now = new Date();
         const newOrder: Order = {
             id: `ORD-${Date.now()}`,
             tableNo: 'Walk-in',
@@ -54,10 +55,11 @@ export default function POSPage() {
             subtotal: cartTotal,
             tax: tax,
             total: finalTotal,
-            status: 'pending',
+            status: 'completed', // Set as completed since payment is done
             paymentStatus: 'paid',
             paymentMethod: method,
-            createdAt: new Date()
+            createdAt: now,
+            completedAt: now.toISOString() // Add completion timestamp for analytics
         };
 
         addOrder(newOrder);

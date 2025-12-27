@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Coffee, ChefHat, LogOut, Settings, Home, ShoppingCart, Menu, X } from 'lucide-react';
+import { Coffee, ChefHat, LogOut, Settings, Home, ShoppingCart, Menu, X, BarChart3 } from 'lucide-react';
+
 import { cn } from './ui/Button';
 import { useStore } from '../store';
 
@@ -115,6 +116,12 @@ export function Layout({ children }: LayoutProps) {
                         icon={<Coffee className="h-5 w-5" />}
                         label="Menu"
                         active={isActive('/menu')}
+                    />
+                    <NavLink
+                        to="/analytics"
+                        icon={<BarChart3 className="h-5 w-5" />}
+                        label="Analytics"
+                        active={isActive('/analytics')}
                     />
                     <NavLink
                         to="/settings"

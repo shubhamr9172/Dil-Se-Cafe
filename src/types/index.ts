@@ -9,6 +9,7 @@ export interface MenuItem {
     name: string;
     description?: string;
     price: number;
+    cost?: number; // Cost price for profit calculation
     categoryId: string;
     isAvailable: boolean;
     type: 'veg' | 'non-veg' | 'egg';
@@ -31,4 +32,6 @@ export interface Order {
     paymentStatus: 'pending' | 'paid';
     paymentMethod?: 'cash' | 'upi';
     createdAt: Date; // or Firestore Timestamp
+    completedAt?: string; // Track when order was completed for analytics
 }
+

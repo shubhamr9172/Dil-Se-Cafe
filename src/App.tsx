@@ -7,6 +7,7 @@ import POSPage from './features/order/POSPage';
 import OrdersPage from './features/order/OrdersPage';
 import KitchenDisplay from './features/kitchen/KitchenDisplay';
 import MenuManagement from './features/menu/MenuManagement';
+import AnalyticsPage from './features/analytics/AnalyticsPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import { useStore } from './store';
@@ -72,6 +73,7 @@ function App() {
                   <Route path="/orders" element={<OrdersPage />} />
                   <Route path="/kitchen" element={<KitchenDisplay />} />
                   <Route path="/menu" element={<MenuManagement />} />
+                  <Route path="/analytics" element={<AnalyticsPage />} />
                   <Route path="/settings" element={<div className="text-2xl font-bold">Settings (Coming Soon)</div>} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
