@@ -199,8 +199,15 @@ export default function MenuManagement() {
                         )}
                     </div>
                 ))}
-                <Button variant="ghost" className="whitespace-nowrap" onClick={handleAddCategory}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Category
+
+                {/* Add Category Button */}
+                <Button
+                    variant="outline"
+                    onClick={handleAddCategory}
+                    className="whitespace-nowrap border-dashed"
+                >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Category
                 </Button>
             </div>
 
